@@ -47,6 +47,7 @@
 #define PCIE_CLIENT_LTSSM_STATUS	0x300
 #define PCIE_LTSSM_ENABLE_ENHANCE	BIT(4)
 #define PCIE_LTSSM_STATUS_MASK		GENMASK(5, 0)
+#define PCIE_TYPE0_HDR_DBI2_OFFSET	0x100000
 
 struct rockchip_pcie {
 	struct dw_pcie			pci;
@@ -211,6 +212,10 @@ static int rockchip_pcie_host_init(struct dw_pcie_rp *pp)
 	rockchip_pcie_writel_apb(rockchip, PCIE_CLIENT_RC_MODE,
 				 PCIE_CLIENT_GENERAL_CONTROL);
 
+	/* Disable BAR 0 and 1 of root port to avoid wasting space */
+	dw_pcie_writel_dbi(pci, PCIE_TYPE0_HDR_DBI2_OFFSET + PCI_BASE_ADDRESS_0, 0);
+	dw_pcie_writel_dbi(pci, PCIE_TYPE0_HDR_DBI2_OFFSET + PCI_BASE_ADDRESS_1, 0);
+	
 	return 0;
 }
 
